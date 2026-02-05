@@ -206,19 +206,19 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 
-# Ignorar os dados extraídos (Outputs)
+# Ignorar os dados extraídos
 *.csv
 *.xlsx
 *.json
 *.xml
 
-# Ignorar ficheiros do sistema operativo (Lixo)
+# Ignorar ficheiros do sistema operativo
 .DS_Store
 Thumbs.db
 
-# Ignorar configurações locais do VS Code (Opcional, mas recomendado)
+# Ignorar configurações locais do VS Code
 .vscode/
 
-# Ignorar logs do WebDriver (caso apareçam)
+# Ignorar logs do WebDriver
 geckodriver.log
 chromedriver.log
