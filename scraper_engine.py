@@ -27,14 +27,12 @@ def get_detail_text(driver, type_data):
     """
     try:
         if type_data == "phone":
-            # Estratégia 1: Botão que tenha o aria-label a começar por "Telefone:"
             try:
                 btn = driver.find_element(By.CSS_SELECTOR, "button[aria-label*='Telefone:']")
                 return btn.get_attribute("aria-label").replace("Telefone: ", "").strip()
             except:
                 pass
             
-            # Estratégia 2: Botão com ícone de telefone (data-item-id contém 'phone')
             try:
                 btn = driver.find_element(By.CSS_SELECTOR, "button[data-item-id*='phone']")
                 return btn.get_attribute("aria-label").replace("Telefone: ", "").strip()
@@ -42,7 +40,6 @@ def get_detail_text(driver, type_data):
                 return "N/A"
 
         elif type_data == "website":
-            # Estratégia 1: Botão com data-item-id="authority" (Padrão do Google)
             try:
                 btn = driver.find_element(By.CSS_SELECTOR, "a[data-item-id='authority']")
                 return btn.get_attribute("href")
@@ -51,7 +48,6 @@ def get_detail_text(driver, type_data):
         
         elif type_data == "rating":
             try:
-                # Procura o span que tem o role="img" e aria-label com "estrelas"
                 span = driver.find_element(By.CSS_SELECTOR, "span[role='img'][aria-label*='estrelas']")
                 return span.get_attribute("aria-label")
             except:
@@ -69,7 +65,6 @@ def run_scraper(search_query, max_results, headless=False):
         print("🌍 A abrir Google Maps Oficial...")
         driver.get("https://www.google.com/maps?hl=pt-PT") 
         
-        # --- COOKIES ---
         print("🍪 A tratar dos cookies...")
         try:
             wait = WebDriverWait(driver, 5)
@@ -79,7 +74,6 @@ def run_scraper(search_query, max_results, headless=False):
         except:
             pass
 
-        # --- PESQUISA ---
         print(f"🔎 A pesquisar por: {search_query}")
         try:
             wait = WebDriverWait(driver, 10)
@@ -94,11 +88,9 @@ def run_scraper(search_query, max_results, headless=False):
         print("✅ Pesquisa enviada. A carregar lista...")
         time.sleep(5) 
 
-        # --- EXTRAÇÃO PROFUNDA ---
         scraped_ids = set()
         
         while len(results) < max_results:
-            # Encontra todos os cartões de negócio na lista
             elements = driver.find_elements(By.CSS_SELECTOR, "a[href*='/maps/place/']")
             valid_elements = [el for el in elements if el.get_attribute("aria-label")]
             
@@ -121,17 +113,13 @@ def run_scraper(search_query, max_results, headless=False):
                     
                     found_new = True
                     scraped_ids.add(link)
-                    
-                    # --- O TRUQUE: CLICAR NO ELEMENTO ---
-                    # Fazemos scroll até ele para garantir que é clicável
+                
                     driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", el)
                     time.sleep(1)
                     el.click()
                     
-                    # Espera o painel lateral carregar os detalhes (Telefone/Site)
                     time.sleep(2.5) 
                     
-                    # Extrair Dados
                     phone = get_detail_text(driver, "phone")
                     website = get_detail_text(driver, "website")
                     rating = get_detail_text(driver, "rating")
@@ -149,8 +137,6 @@ def run_scraper(search_query, max_results, headless=False):
                 except Exception as e:
                     print(f"⚠️ Erro ao processar item: {e}")
                     continue
-
-            # Se chegámos ao fundo dos visíveis, fazer scroll na lista
             try:
                 if valid_elements:
                     driver.execute_script("arguments[0].scrollIntoView();", valid_elements[-1])
@@ -162,7 +148,6 @@ def run_scraper(search_query, max_results, headless=False):
             time.sleep(2)
 
             if not found_new and len(results) > 0:
-                # Tenta esperar um pouco mais
                 time.sleep(2)
                 check = driver.find_elements(By.CSS_SELECTOR, "a[href*='/maps/place/']")
                 if len(check) == len(elements):
