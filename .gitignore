@@ -222,3 +222,10 @@ Thumbs.db
 # Ignorar logs do WebDriver
 geckodriver.log
 chromedriver.log
+
+output/
+build/
+dist/
+*.spec
+*.zip
+*.exe
